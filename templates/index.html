@@ -1,5 +1,230 @@
-{% extends "_base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>ALPINE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.store("form", {
+          invoice: "",
+          trackNO: "",
+          date: "",
+          due: "",
+          payment: "",
+          POnumber: "",
+          items: [
+            {
+              name: "",
+              quantity: 0,
+              price: 0,
+              amount: 0,
+            },
+          ],
+          subtotal: 0,
+          discount: 0,
+          shipping: 0,
+          tax:0,
+          total: 0,
+          amountPaid: 0,
+          balanceDue: 0,
+            image: '',
+          RemoveItem(index) {
+            if (this.items.length > 1) {
+              this.items.splice(index, 1);
+            }
+          },
+          AddItem() {
+            this.items.push({
+              name: "",
+              quantity: 0,
+              price: 0,
+              amount: 0,
+            });
+          },
+          
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container mx-auto px-4" x-data>
+      <div class="flex justify-center">
+        <div class="box-content h-6/12 w-9/12 mt-36 p-4 border-4">
+          <div class="flex justify-between bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div>
+                <img src = "$store.form.image" class="w-20 h-20" alt="logo">
+              <input type = "file" x-text = "$store.form.image" x-model = "$store.form.image">
+            </div>
+            <div class="flex flex-col justify-around">
+              <div class="flex flex-col gap-3">
+                <input
+                  type="text"
+                  placeholder="INVOICE"
+                  class="placeholder-slate-900 text-3xl"
+                  x-model="$store.form.invoice"
+                  x-text="$store.form.invoice"
+                />
+                <input
+                  type="number"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder="#"
+                  x-model="$store.form.trackNO"
+                  required
+                />
+              </div>
+              <div class="flex flex-col gap-3">
+                <input
+                  type="date"
+                  class="mt-12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
+                  placeholder="Date"
+                  x-model="$store.form.date"
+                  required
+                />
+                <input
+                  type="text"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder="Payment Terms"
+                  x-model="$store.form.payment"
+                  required
+                />
+                <input
+                  type="date"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder="Due Date"
+                  x-model="$store.form.due"
+                  required
+                />
+                <input
+                  type="number"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder="PO Number"
+                  x-model="$store.form.POnumber"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <table class="table-auto w-full">
+              <thead>
+                <tr class="bg-black text-white border">
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Rate</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="(item, index) in $store.form.items" :key="index">
+                <tr class="border-b">
+                
+                  <td>
+                    <input
+                      type="text"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      placeholder="Description"
+                        x-model="item.name"
+                        x-text="item.name"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      placeholder="Quantity"
+                        x-model="item.quantity"
+                        x-text="item.quantity"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      placeholder="Rate"
+                        x-model="item.price"
+                        x-text="item.price"
+                    />
+                  </td>
+                  <td x-text = "item.amount = item.quantity * item.price" x-model = "item.amount"> </td>
+                  <td >
+                    <button @click = "$store.form.RemoveItem(index)" class=" hover:to-red-600 hover:fill-red-800">X</button>
+                  </td>
+                </tr>
+            </template>
 
-{% block content %}
-    <h1 class="flex justify-center">testing</h1>
-{% endblock content %}
+              </tbody>
+            </table>
+            <button @click = "$store.form.AddItem()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">+ List</button>
+            <div class="flex flex-col items-start justify-start mt-12">
+                <div class="md:flex md:items-center mb-6">
+                        <p class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+                            Subtotal
+                        </p>
+                        <p x-text= "$store.form.subtotal= $store.form.items.reduce((accumulator,currentValue) => accumulator +currentValue.amount,0);" x-model = "$store.form.subtotal"></p>
+                
+                </div>
+              <div class="md:flex md:items-center mb-6">
+                <div class="md:w-1/3">
+                  <label class="block text-black md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+                    Discount
+                  </label>
+                </div>
+                <div class="md:w-2/3">
+                  <input
+                    class="bg-gray-50 appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+                    type="number"
+                    x-text = "$store.form.discount"
+                    x-model = "$store.form.discount"
+                  />
+                </div>
+              </div>
+             
+              <div class="md:flex md:items-center mb-6">
+                <div class="md:w-1/3">
+                  <label class="block text-black md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+                    Shipping
+                  </label>
+                </div>
+                <div class="md:w-2/3">
+                  <input
+                    class="bg-gray-50 appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+                    type="number"
+                    x-text = "$store.form.shipping"
+                    x-model = "$store.form.shipping"
+                  />
+                </div>
+                
+              </div>
+              <div class="md:flex md:items-center mb-6">
+                <div class="md:w-1/3">
+                  <label class="block text-black md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+                    Tax
+                  </label>
+                </div>
+                <div class="md:w-2/3">
+                  <input
+                    class="bg-gray-50 appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+                    type="number"
+                    x-text = "$store.form.tax"
+                    x-model = "$store.form.tax"
+                  />
+                </div>
+                
+              </div>
+              <div class="md:flex md:items-center mb-6">
+                <p class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+                    Total
+                </p>
+                <p x-text= "$store.form.subtotal > 0 && $store.form.total >= 0? $store.form.total = parseFloat($store.form.subtotal) - $store.form.discount + parseFloat($store.form.shipping) + parseFloat($store.form.tax)  : 0" x-model = "$store.form.total"></p>
+        </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
